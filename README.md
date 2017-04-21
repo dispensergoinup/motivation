@@ -45,3 +45,11 @@ The "Score" for each goal is:
 		-Subtract count score from amount score and clip to 0-1.
 	-Controls severity/amount of events.
 	
+Components will consist of:
+	-Generic DB adaptor, to facilitate swapping between test and prod DB types
+	-Score/Bank calculator
+	-Events Engine
+	
+	
+Process will run at a set interval, somewhere around 1-15 minutes.
+	
