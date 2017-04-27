@@ -36,23 +36,26 @@ class Database():
 	def getGoals(self):
 		return self.goals
 		
-	def writeBank(self,id, amount):
+	def writeBank(self,type, value):
 		bank = json.load(open('bank.json','r'))
-		bank.append({'id':id,'amount':amount,'time':(datetime.utcnow()+timedelta(hours=DB_TZ_OFFSET)).strftime('%Y-%m-%d %H:%M:%S')})
+		bank.append({'type':type,'value':value,'time':(datetime.utcnow()+timedelta(hours=DB_TZ_OFFSET)).strftime('%Y-%m-%d %H:%M:%S')})
 		json.dump(bank,open('bank.json','w'))
 		
-	def getBank(self,id):
+	def getBank(self,type):
 		bank = json.load(open('bank.json','r'))
 		date = datetime.min
-		latest = 0
+		latest = None
 		for item in bank:
 			item['time'] = datetime.strptime(item['time'],'%Y-%m-%d %H:%M:%S')
 			#Convert to UTC
 			item['time'] = item['time']-timedelta(hours=DB_TZ_OFFSET)
-			if item['id'] == id and item['time'] >= date:
-				latest = item['amount']
+			if item['type'] == type and item['time'] >= date:
+				latest = item
 				date = item['time']
 		return latest
+		
+	def closeDB(self):
+		pass
 		
 '''			
 d = Database()
