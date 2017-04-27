@@ -1,6 +1,7 @@
-from dbadaptor import Database
+from dbadaptortest import Database
 from datetime import datetime
 import argparse
+import xml.etree.ElementTree as et
 
 def updateBank(db):
 	print "Updating Bank"
@@ -27,6 +28,38 @@ def updateBank(db):
 			print goal['name'],total,bank['value']
 			db.writeBank(goal['type'],bank['value'])
 
+def generateReport(db):
+	def goalSection(goal):
+		return et.Element('br')
+		
+	#outfile = r'/home/cmocho/public_html/weightloss/index.htm'
+	outfile = r'index.htm'
+	
+	root = et.Element('html')
+	html = et.ElementTree(element=root)
+	
+	head = et.Element('head')
+	meta = et.Element('meta')
+	meta.attrib['name'] = "viewport"
+	meta.attrib['content'] = "width=device-width, initial-scale=1"
+	head.append(meta)
+	
+	body = et.Element('body')
+	
+	goals = db.getGoals()
+	for goal in goals:
+		body.append(goalSection(goal))
+	
+	foot = et.Element('br')
+	foot.text = str(datetime.now())
+	
+	body.append(foot)
+	
+	root.append(head)
+	root.append(body)
+	
+	html.write(outfile)
+	
 parser = argparse.ArgumentParser(description='Run Motivator Commands')
 parser.add_argument('--action', help='Define the action')
 
@@ -36,5 +69,7 @@ d = Database()
 	
 if args.action == 'bank':
 	updateBank(d)
+elif args.action == 'report':
+	generateReport(d)
 
 d.closeDB()
